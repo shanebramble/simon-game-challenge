@@ -1,9 +1,12 @@
  var buttonColors = ["red", "blue", "green", "yellow"];
  var gamePattern = [];
  var userClickedPattern = [];
+ var level = 0;
+ var started = true;
 
 
  var buttonSound = function (randomChosenColour) {
+     // Play sound of corresponding button.
      switch (randomChosenColour) {
          case "red":
              var redAudio = new Audio("assets/sounds/red.mp3");
@@ -25,7 +28,7 @@
  };
 
  var animatePress = function (currentColor) {
-
+     // Create a delay for when a button is pressed.
      $("#" + currentColor).addClass("pressed");
 
      setTimeout(function () {
@@ -35,6 +38,8 @@
  };
 
  function nextSequence() {
+     level++;
+     $("#level-title").text("Level " + level);
      // Generate a random number between 0 - 3
      var randomNumber = Math.floor(Math.random() * 4);
      var randomChosenColour = buttonColors[randomNumber];
@@ -47,12 +52,19 @@
 
  $(".btn").on("click", function () {
      // Get color name for pressed button.
-    var userChosenColour = $(this).attr("id");
-    userClickedPattern.push(userChosenColour);
+     var userChosenColour = $(this).attr("id");
+     userClickedPattern.push(userChosenColour);
 
-    // Play animation and sound for pressed button.
+     // Play animation and sound for pressed button.
      buttonSound(userChosenColour);
      animatePress(userChosenColour);
-    
-     console.log(`You pressed: ${userChosenColour}`);
+ });
+
+
+ $(document).keydown(function (e) {
+     if (started) {
+         $("#level-title").text("Level " + level);
+         nextSequence();
+         started = false;
+     }
  });
