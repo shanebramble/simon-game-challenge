@@ -5,6 +5,12 @@
  var started = true;
 
 
+var startOver = function (){
+    started = true;
+    level = 0;
+    gamePattern = [];
+};
+
  var buttonSound = function (randomChosenColour) {
      // Play sound of corresponding button.
      switch (randomChosenColour) {
@@ -37,7 +43,37 @@
 
  };
 
+ function checkAnswer(currentLevel) {
+     if (userClickedPattern[currentLevel] === gamePattern[currentLevel]) {
+         // Check if user has finished their sequence.
+         if (userClickedPattern.length === gamePattern.length) {
+
+             //5. Call nextSequence() after a 1000 millisecond delay.
+             setTimeout(function () {
+                 nextSequence();
+             }, 1000)
+
+         }
+     } else {
+         // Play this sound if the user got one of the answers wrong.
+         var wrongAudio = new Audio("assets/sounds/wrong.mp3");
+         wrongAudio.play();
+         //  apply this class to the body of the website when the user gets one of
+         //  the answers wrong and then remove it after 200 milliseconds.
+         $("body").addClass("game-over");
+
+         setTimeout(() => {
+             $("body").removeClass("game-over");
+         }, 200);
+
+         $("#level-title").text("Game Over, Press Any Key to Restart");
+         startOver();
+     }
+ }
+
  function nextSequence() {
+     //6. Once nextSequence() is triggered, reset the userClickedPattern to an empty array ready for the next level.
+     userClickedPattern = [];
      level++;
      $("#level-title").text("Level " + level);
      // Generate a random number between 0 - 3
@@ -58,10 +94,14 @@
      // Play animation and sound for pressed button.
      buttonSound(userChosenColour);
      animatePress(userChosenColour);
+
+     // Check answer from user.
+     checkAnswer(userClickedPattern.length - 1);
+
  });
 
 
- $(document).keydown(function (e) {
+ $(document).keydown(function () {
      if (started) {
          $("#level-title").text("Level " + level);
          nextSequence();
